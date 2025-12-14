@@ -63,8 +63,8 @@ Add a **Code Block** to your Squarespace page with this HTML:
 </div>
 
 <script>
-  // REPLACE THIS with your actual GitHub Pages URL
-  const JSON_URL = 'https://[your-username].github.io/[repo-name]/concerts.json';
+  // Your GitHub Pages URL
+  const JSON_URL = 'https://bdicksmusic.github.io/notion-to-squarespace/concerts.json';
 
   async function loadConcerts() {
     try {
