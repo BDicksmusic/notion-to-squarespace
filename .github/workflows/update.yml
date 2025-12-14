@@ -34,7 +34,7 @@ jobs:
         run: |
           git config --global user.name 'Concert Bot'
           git config --global user.email 'bot@noreply.github.com'
-          git add concerts.json
+          git add concerts.json posters/
           # Only commit if changes exist
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update concerts.json" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update concerts and posters" && git push)
 
