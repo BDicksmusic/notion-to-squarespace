@@ -1,0 +1,28 @@
+{
+  "name": "notion-to-squarespace",
+  "version": "1.0.0",
+  "description": "Syncs concert data from Notion to a JSON file for Squarespace consumption",
+  "main": "sync.ts",
+  "scripts": {
+    "sync": "ts-node sync.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "notion",
+    "squarespace",
+    "sync",
+    "concerts"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.2"
+  }
+}
+

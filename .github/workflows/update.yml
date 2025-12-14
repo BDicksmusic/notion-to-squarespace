@@ -1,0 +1,40 @@
+name: Update Concert Schedule
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour on the hour
+  workflow_dispatch: # Allows you to click a "Run Now" button in GitHub
+
+jobs:
+  refresh-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Crucial: allows the bot to commit changes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Sync Script
+        env:
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: npx ts-node sync.ts
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'Concert Bot'
+          git config --global user.email 'bot@noreply.github.com'
+          git add concerts.json
+          # Only commit if changes exist
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update concerts.json" && git push)
+
