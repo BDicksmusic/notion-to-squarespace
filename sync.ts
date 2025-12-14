@@ -16,9 +16,35 @@ interface Concert {
   programName: string;
   date: string;
   venue: string;
+  venueMapUrl: string | null;
   ticketLink: string | null;
   description: string;
   posterUrl: string | null;
+  season: string;
+}
+
+// Clean venue string and create Google Maps URL
+function parseVenue(rawVenue: string): { venue: string; mapUrl: string | null } {
+  if (!rawVenue || rawVenue === "TBA" || rawVenue === "- :") {
+    return { venue: "TBA", mapUrl: null };
+  }
+
+  // Clean up the venue string (remove @ symbols and extra formatting)
+  let venue = rawVenue
+    .replace(/@/g, '')
+    .replace(/: ,/g, ', ')
+    .replace(/- :$/g, '')
+    .replace(/: $/g, '')
+    .trim();
+
+  if (!venue || venue === "-") {
+    return { venue: "TBA", mapUrl: null };
+  }
+
+  // Create Google Maps search URL
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
+
+  return { venue, mapUrl };
 }
 
 const notion = new Client({ auth: process.env.NOTION_KEY });
@@ -57,47 +83,64 @@ function getPosterFile(files: any[]): { url: string; name: string } | null {
   return null;
 }
 
+// Calculate concert season (August starts new season)
+// October 2025 - April 2026 = "2025-2026"
+function getSeason(dateStr: string): string {
+  const date = new Date(dateStr);
+  const month = date.getMonth(); // 0-11 (0=Jan, 7=Aug)
+  const year = date.getFullYear();
+  
+  // If August (7) or later, it's the start of a new season: YEAR-YEAR+1
+  // If before August (Jan-Jul), it's still the previous season: YEAR-1-YEAR
+  if (month >= 7) { // August onwards
+    return `${year}-${year + 1}`;
+  } else {
+    return `${year - 1}-${year}`;
+  }
+}
+
 async function fetchConcerts() {
   if (!DATABASE_ID) throw new Error("Missing NOTION_DATABASE_ID");
 
-  console.log("Fetching upcoming concerts from Notion...");
+  console.log("Fetching ALL concerts from Notion...");
 
   // Ensure posters directory exists
   await mkdir(POSTERS_DIR, { recursive: true });
 
-  // Query the database - filter for Future, Next, or Current concerts
-  const response = await notion.databases.query({
-    database_id: DATABASE_ID,
-    filter: {
-      or: [
+  // Query ALL concerts (no status filter), sorted by date
+  let allResults: any[] = [];
+  let hasMore = true;
+  let startCursor: string | undefined = undefined;
+
+  while (hasMore) {
+    const response: any = await notion.databases.query({
+      database_id: DATABASE_ID,
+      start_cursor: startCursor,
+      sorts: [
         {
-          property: "Status",
-          status: { equals: "Future" },
-        },
-        {
-          property: "Status",
-          status: { equals: "Next" },
-        },
-        {
-          property: "Status",
-          status: { equals: "Current" },
+          property: "Date",
+          direction: "ascending",
         },
       ],
-    },
-    sorts: [
-      {
-        property: "Date",
-        direction: "ascending",
-      },
-    ],
-  });
+    });
+
+    allResults = allResults.concat(response.results);
+    hasMore = response.has_more;
+    startCursor = response.next_cursor;
+  }
+
+  console.log(`  Found ${allResults.length} total concerts`);
 
   // Map the raw Notion API response to your clean JSON
   const concerts: Concert[] = [];
 
-  for (const page of response.results) {
+  for (const page of allResults) {
     const props = (page as any).properties;
     const pageId = (page as any).id.replace(/-/g, ""); // Remove dashes for filename
+    const dateStr = props["Date"]?.date?.start || "";
+
+    // Skip if no date
+    if (!dateStr) continue;
 
     // Get poster file info
     const posterFile = getPosterFile(props["Posters"]?.files);
@@ -121,25 +164,30 @@ async function fetchConcerts() {
       }
     }
 
+    // Parse venue and create map URL
+    const { venue, mapUrl } = parseVenue(props["Location"]?.formula?.string || "");
+
     concerts.push({
       id: (page as any).id,
       title: props["Program Name"]?.rich_text?.[0]?.plain_text || props["Name"]?.title?.[0]?.plain_text || "Untitled Event",
       programName: props["Name"]?.title?.[0]?.plain_text || "",
-      date: props["Date"]?.date?.start || "",
-      venue: props["Location"]?.formula?.string || "TBA",
+      date: dateStr,
+      venue,
+      venueMapUrl: mapUrl,
       ticketLink: props["Link to Purchase Tickets"]?.url || null,
       description: props["Promotional Blurb"]?.rich_text?.[0]?.plain_text || "",
       posterUrl,
+      season: getSeason(dateStr),
     });
   }
 
-  // Filter out any events with missing dates
-  const validConcerts = concerts.filter((c) => c.date !== "");
+  // Sort by date
+  concerts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Write to file
-  await writeFile("concerts.json", JSON.stringify(validConcerts, null, 2));
+  await writeFile("concerts.json", JSON.stringify(concerts, null, 2));
   console.log(
-    `\n✅ Success! Generated concerts.json with ${validConcerts.length} upcoming events.`
+    `\n✅ Success! Generated concerts.json with ${concerts.length} concerts.`
   );
 }
 
