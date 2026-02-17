@@ -226,5 +226,65 @@
     "description": "Join the Salt River Brass for a Celebration of Youth and Inspiration. Experience the joy of music and the power of growth at this special concert event. Arizona’s Premier Brass Band is exciting to offer you a concert full of collaborations. Opening the event, the Salt River Youth Brass Band is showcasing their talent and remarkable progress through an inspiring selection of pieces. Following this, the Salt River Brass will take the stage with a vibrant and energetic program guaranteed to captivate audiences. Lastly, a united stage with all musicians performing “Stars and Stripes Forever” will deliver an emotional and celebratory finale, showcasing the talent and spirit of all ensembles, and is guaranteed to leave a lasting impression.",
     "posterUrl": "posters/156eb27c393c80449f77da1ff463b97e.jpg",
     "season": "2025-2026"
+  },
+  {
+    "id": "4e301c77-9dd1-48e9-9359-a4682712e79c",
+    "title": "Sounds of Gold",
+    "programName": "Program26'10/04 Sounds of Gold",
+    "date": "2026-10-04",
+    "venue": "St. Barnabas on the Desert - 6715 N Mockingbird Ln, Paradise Valley, AZ 85253: Paradise Valley",
+    "venueMapUrl": "https://www.google.com/maps/search/?api=1&query=St.%20Barnabas%20on%20the%20Desert%20-%206715%20N%20Mockingbird%20Ln%2C%20Paradise%20Valley%2C%20AZ%2085253%3A%20Paradise%20Valley",
+    "ticketLink": null,
+    "description": "Welcome to the Salt River Brass’ 38 season! Your favorite brass band invites you to ",
+    "posterUrl": null,
+    "season": "2026-2027"
+  },
+  {
+    "id": "7f7c225d-a6ad-4666-ba43-df99c8dc6e41",
+    "title": "Heroes",
+    "programName": "Program26'11/08 Heroes",
+    "date": "2026-11-08",
+    "venue": "Mesa Arts Center - 1 E Main St, Mesa, AZ 85201: Mesa, AZ",
+    "venueMapUrl": "https://www.google.com/maps/search/?api=1&query=Mesa%20Arts%20Center%20-%201%20E%20Main%20St%2C%20Mesa%2C%20AZ%2085201%3A%20Mesa%2C%20AZ",
+    "ticketLink": null,
+    "description": "Your Salt River Brass proudly presents ",
+    "posterUrl": null,
+    "season": "2026-2027"
+  },
+  {
+    "id": "e48b6c80-76b8-4bc8-ac09-3a29c857f187",
+    "title": "Believe",
+    "programName": "Program26'12/13 Believe",
+    "date": "2026-12-13",
+    "venue": "Mesa Arts Center - 1 E Main St, Mesa, AZ 85201: Mesa, AZ",
+    "venueMapUrl": "https://www.google.com/maps/search/?api=1&query=Mesa%20Arts%20Center%20-%201%20E%20Main%20St%2C%20Mesa%2C%20AZ%2085201%3A%20Mesa%2C%20AZ",
+    "ticketLink": null,
+    "description": "Your Salt River Brass presents ",
+    "posterUrl": null,
+    "season": "2026-2027"
+  },
+  {
+    "id": "0e882c03-153c-4c1a-9023-956fb434c402",
+    "title": "Heatwave",
+    "programName": "Program27'02/28 Heatwave",
+    "date": "2027-02-28",
+    "venue": "Mesa Arts Center - 1 E Main St, Mesa, AZ 85201: Mesa, AZ",
+    "venueMapUrl": "https://www.google.com/maps/search/?api=1&query=Mesa%20Arts%20Center%20-%201%20E%20Main%20St%2C%20Mesa%2C%20AZ%2085201%3A%20Mesa%2C%20AZ",
+    "ticketLink": null,
+    "description": "Your favorite brass band turns up the temperature with ",
+    "posterUrl": null,
+    "season": "2026-2027"
+  },
+  {
+    "id": "819f6ae9-c8c2-4144-a4c7-e56960e5b652",
+    "title": "Rising",
+    "programName": "Program27'04/18 Rising",
+    "date": "2027-04-18",
+    "venue": "Mesa Arts Center - 1 E Main St, Mesa, AZ 85201: Mesa, AZ",
+    "venueMapUrl": "https://www.google.com/maps/search/?api=1&query=Mesa%20Arts%20Center%20-%201%20E%20Main%20St%2C%20Mesa%2C%20AZ%2085201%3A%20Mesa%2C%20AZ",
+    "ticketLink": null,
+    "description": "Salt River Brass takes the stage with ",
+    "posterUrl": null,
+    "season": "2026-2027"
   }
 ]
