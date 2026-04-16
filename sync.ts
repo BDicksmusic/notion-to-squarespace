@@ -14,7 +14,7 @@ interface Concert {
   id: string;
   title: string;
   programName: string;
-  date: string; // Always YYYY-MM-DD, no time or timezone
+  date: date; // Always YYYY-MM-DD, no time or timezone
   venue: string;
   venueMapUrl: string | null;
   ticketLink: string | null;
