@@ -14,7 +14,7 @@ interface Concert {
   id: string;
   title: string;
   programName: string;
-  date: date; // Always YYYY-MM-DD, no time or timezone
+  date: string; // Always YYYY-MM-DD, no time or timezone
   venue: string;
   venueMapUrl: string | null;
   ticketLink: string | null;
@@ -208,9 +208,7 @@ async function fetchConcerts() {
   }
  
   // Sort by date
-  concerts.sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  concerts.sort((a, b) => a.date.localeCompare(b.date));
  
   // Write to file
   await writeFile("concerts.json", JSON.stringify(concerts, null, 2));
