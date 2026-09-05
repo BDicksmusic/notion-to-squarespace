@@ -3,7 +3,13 @@ name: Update Concert Schedule
 on:
   schedule:
     - cron: '0 * * * *' # Runs every hour on the hour
-  workflow_dispatch: # Allows you to click a "Run Now" button in GitHub
+  workflow_dispatch:
+    inputs:
+      ticket_link_mode:
+        description: Sounds of Gold ticket link (publish requires open production sales)
+        type: choice
+        options: [unchanged, inspect, publish]
+        default: unchanged
 
 jobs:
   refresh-data:
@@ -24,17 +30,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Inspect or publish Sounds of Gold ticket link
+        if: github.event_name == 'workflow_dispatch' && inputs.ticket_link_mode != 'unchanged'
+        env:
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          TICKET_LINK_MODE: ${{ inputs.ticket_link_mode }}
+        run: node scripts/sounds-of-gold-ticket-link.mjs
+
       - name: Run Sync Script
+        if: inputs.ticket_link_mode != 'inspect'
         env:
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: npx ts-node sync.ts
 
       - name: Commit and Push
+        if: inputs.ticket_link_mode != 'inspect'
         run: |
           git config --global user.name 'Concert Bot'
           git config --global user.email 'bot@noreply.github.com'
           git add concerts.json posters/
           # Only commit if changes exist
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update concerts and posters" && git push)
-

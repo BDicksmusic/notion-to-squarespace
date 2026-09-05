@@ -14,7 +14,7 @@ interface Concert {
   id: string;
   title: string;
   programName: string;
-  date: string; // Always YYYY-MM-DD, no time or timezone
+  date: string; // Notion date or timestamp; preserve concert start time
   venue: string;
   venueMapUrl: string | null;
   ticketLink: string | null;
@@ -47,23 +47,16 @@ function parseVenue(rawVenue: string): { venue: string; mapUrl: string | null } 
   return { venue, mapUrl };
 }
  
-// Normalize any Notion date to a plain YYYY-MM-DD string.
-// Notion may return "2025-04-19" or "2025-02-02T15:00:00.000-07:00".
-// We always want just the date portion in local (Phoenix) terms.
+// Preserve the source timestamp so the website can display the concert time.
+// Date-only entries stay date-only rather than inventing a start time.
 function normalizeDate(raw: string): string {
-  // If it's already a plain date (no "T"), return as-is
-  if (!raw.includes("T")) {
-    return raw;
-  }
- 
-  // Has a time component. The offset (e.g. -07:00) represents the local
-  // timezone the date was entered in (Phoenix). We want the local date,
-  // NOT the UTC date. Splitting at "T" gives us the local calendar date
-  // that was intended, which is correct because Notion stores the offset
-  // of the timezone the user was in when they set the date.
-  return raw.split("T")[0];
+  return raw;
 }
- 
+
+function richText(parts: any[] = []): string {
+  return parts.map((part) => part.plain_text ?? part.text?.content ?? "").join("");
+}
+
 // Calculate concert season (August starts new season)
 // Parses directly from the YYYY-MM-DD string to avoid Date constructor quirks
 function getSeason(dateStr: string): string {
@@ -159,7 +152,7 @@ async function fetchConcerts() {
     // Skip if no date
     if (!rawDate) continue;
  
-    // Normalize to plain YYYY-MM-DD — strips time and timezone
+    // Preserve a provided concert start time for the website.
     const date = normalizeDate(rawDate);
  
     // Get poster file info
@@ -192,16 +185,16 @@ async function fetchConcerts() {
     concerts.push({
       id: (page as any).id,
       title:
-        props["Program Name"]?.rich_text?.[0]?.plain_text ||
-        props["Name"]?.title?.[0]?.plain_text ||
+        richText(props["Program Name"]?.rich_text) ||
+        richText(props["Name"]?.title) ||
         "Untitled Event",
-      programName: props["Name"]?.title?.[0]?.plain_text || "",
+      programName: richText(props["Name"]?.title) || "",
       date,
       venue,
       venueMapUrl: mapUrl,
       ticketLink: props["Link to Purchase Tickets"]?.url || null,
       description:
-        props["Promotional Blurb"]?.rich_text?.[0]?.plain_text || "",
+        richText(props["Promotional Blurb"]?.rich_text) || "",
       posterUrl,
       season: getSeason(date),
     });
